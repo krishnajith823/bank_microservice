@@ -1,11 +1,14 @@
 package com.deloitte.entity;
 
+import java.util.UUID;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.TableGenerator;
 
@@ -19,8 +22,8 @@ public class Bank {
 			pkColumnValue = "acc",
 			valueColumnName = "acc_value",
 			allocationSize = 1)
+	//@GenericGenerator(name = "random_id_generator",strategy = "com.deloitte.RandomIdGenenrator")
 	@Id
-	@GenericGenerator(name = "random_id_generator",strategy = "com.deloitte.RandomIdGenenrator")
 	private String accountNo;
 	private long bankId;
 	private String bankType;
@@ -35,6 +38,21 @@ public class Bank {
 	private String authenticationMethod;
 	private String transactionType;
 	private String communicationChannel;
+	
+	
+	 @PrePersist
+	    private void generaAccountNo() {
+	        // Generate a 16-character alphanumeric user ID
+	        this.accountNo = generateRandomAccountNo();
+	    }
+
+	    private String generateRandomAccountNo() {
+	        // Generate a random UUID and remove hyphens to get a 32-character string
+	        String uuid = UUID.randomUUID().toString().replace("-", "");
+	        
+	        // Take the first 16 characters
+	        return uuid.substring(0, 16);
+	    }
 	
 	public String getAccountNo() {
 		return accountNo;
